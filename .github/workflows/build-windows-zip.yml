@@ -1,0 +1,38 @@
+name: Build Windows ZIP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows-zip:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install project dependencies
+        run: python -m pip install -e .
+
+      - name: Install ffmpeg
+        shell: pwsh
+        run: choco install ffmpeg -y
+
+      - name: Build Windows ZIP artifact
+        shell: pwsh
+        run: .\build_windows_zip.ps1 -Python python
+
+      - name: Upload Windows ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: playlist-video-maker-windows-zip
+          path: build/windows/release/*.zip
+          if-no-files-found: error
