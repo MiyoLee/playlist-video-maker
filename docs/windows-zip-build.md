@@ -75,6 +75,8 @@ In GitHub Actions, the downloadable artifact contains that generated ZIP file.
 - Windows users can satisfy that requirement by:
   - adding `ffmpeg/bin` to `PATH`, or
   - setting `FFMPEG_PATH` and `FFPROBE_PATH`
+- if startup fails before any window appears, check:
+  - `%USERPROFILE%\PlayList\playlist-video-maker-logs`
 
 ## Verification checklist
 

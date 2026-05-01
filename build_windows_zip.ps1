@@ -13,7 +13,7 @@ $WorkRoot = Join-Path $BuildRoot "work"
 $ReleaseRoot = Join-Path $BuildRoot "release"
 $ReleaseDir = Join-Path $ReleaseRoot $AppName
 $ZipPath = Join-Path $ReleaseRoot "$AppName-windows-$Version.zip"
-$EntryPoint = Join-Path $RepoRoot "src/playlist_video_maker/main.py"
+$EntryPoint = Join-Path $RepoRoot "src/playlist_video_maker/__main__.py"
 $FontsSource = Join-Path $RepoRoot "resources/fonts"
 $FontsTarget = Join-Path $ReleaseDir "resources/fonts"
 $LicenseSource = Join-Path $RepoRoot "resources/fonts/source-han-sans-license/LICENSE.txt"
@@ -78,6 +78,8 @@ Playlist Video Maker (Windows ZIP)
    - Put ffmpeg/bin on PATH, or
    - Set FFMPEG_PATH and FFPROBE_PATH to the full executable paths.
 4. Fonts for subtitle rendering are included under resources\fonts.
+5. If startup fails before the window appears, check:
+   %USERPROFILE%\PlayList\playlist-video-maker-logs
 "@ | Set-Content -Path $ReadmeTarget -Encoding UTF8
 
 if (Test-Path $ZipPath) {
