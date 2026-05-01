@@ -674,8 +674,8 @@ class MainWindow(QMainWindow):
             return max(HORIZONTAL_MARGIN, width - text_width - HORIZONTAL_MARGIN)
         return max(0, (width - text_width) // 2)
 
-    def normalize_text(self, value: str) -> str:
-        return unicodedata.normalize("NFC", value)
+    def normalize_text(self, value: str | None) -> str:
+        return unicodedata.normalize("NFC", value or "")
 
     def preview_font_weight(self, font_weight: str) -> QFont.Weight:
         weight_map = {
@@ -910,7 +910,7 @@ class MainWindow(QMainWindow):
             minutes = int(current_time // 60)
             seconds = int(current_time % 60)
             time_str = f"{minutes:02d}:{seconds:02d}"
-            caption = track.resolved_bottom_caption_text(self.bottom_caption_source())
+            caption = track.filename_caption_text
             lines.append(f"{time_str} {caption}".rstrip())
 
             current_time += duration

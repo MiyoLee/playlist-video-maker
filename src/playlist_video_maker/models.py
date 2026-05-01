@@ -25,8 +25,8 @@ class TrackInfo:
 
     @property
     def bottom_caption_text(self) -> str:
-        title = unicodedata.normalize("NFC", self.title.strip())
-        artist = unicodedata.normalize("NFC", self.artist.strip())
+        title = unicodedata.normalize("NFC", (self.title or "").strip())
+        artist = unicodedata.normalize("NFC", (self.artist or "").strip())
         if artist:
             return unicodedata.normalize("NFC", f"{artist} - {title}")
         return title
@@ -37,7 +37,7 @@ class TrackInfo:
 
     @property
     def top_caption_text(self) -> str:
-        return unicodedata.normalize("NFC", self.top_caption.strip())
+        return unicodedata.normalize("NFC", (self.top_caption or "").strip())
 
     @property
     def filename_caption_text(self) -> str:
@@ -78,7 +78,7 @@ class JobConfig:
     bottom_subtitle_style: SubtitleStyle
 
     def output_path(self) -> Path:
-        filename = self.output_filename.strip() or default_output_filename()
+        filename = (self.output_filename or "").strip() or default_output_filename()
         if not filename.lower().endswith(".mp4"):
             filename = f"{filename}.mp4"
         return self.output_directory / filename

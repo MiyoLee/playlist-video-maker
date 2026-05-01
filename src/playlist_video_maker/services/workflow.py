@@ -31,7 +31,8 @@ def get_audio_duration(file_path: Path) -> float:
     ]
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     if result.returncode != 0:
-        raise WorkflowError(f"길이 확인 실패: {result.stderr.strip()}")
+        error_output = (result.stderr or "").strip()
+        raise WorkflowError(f"길이 확인 실패: {error_output}")
     payload = json.loads(result.stdout)
     return float(payload["format"]["duration"])
 
@@ -135,8 +136,9 @@ class PlaylistVideoWorkflow:
             ]
             result = subprocess.run(command, capture_output=True, text=True, check=False)
             if result.returncode != 0:
+                error_output = (result.stderr or "").strip()
                 raise WorkflowError(
-                    f"{track.source_path.name} 길이 확인 실패: {result.stderr.strip()}"
+                    f"{track.source_path.name} 길이 확인 실패: {error_output}"
                 )
             payload = json.loads(result.stdout)
             duration = float(payload["format"]["duration"])
@@ -224,8 +226,9 @@ class PlaylistVideoWorkflow:
             check=False,
         )
         if result.returncode != 0:
+            error_output = (result.stderr or "").strip()
             raise WorkflowError(
-                f"합쳐진 오디오 길이 확인 실패: {result.stderr.strip()}"
+                f"합쳐진 오디오 길이 확인 실패: {error_output}"
             )
         payload = json.loads(result.stdout)
         duration = float(payload["format"]["duration"])
@@ -620,8 +623,8 @@ class PlaylistVideoWorkflow:
         bbox = draw.textbbox((0, 0), "가", font=font)
         return max(1, bbox[3] - bbox[1])
 
-    def _parse_hex_color(self, value: str) -> tuple[int, int, int, int]:
-        cleaned = value.strip().lstrip("#")
+    def _parse_hex_color(self, value: str | None) -> tuple[int, int, int, int]:
+        cleaned = (value or "").strip().lstrip("#")
         if len(cleaned) != 6:
             return (255, 255, 255, 255)
         try:
@@ -640,10 +643,12 @@ class PlaylistVideoWorkflow:
     ) -> None:
         log("$ " + " ".join(command))
         result = subprocess.run(command, capture_output=True, text=True, check=False)
-        if result.stdout.strip():
-            log(result.stdout.strip())
+        stdout_output = (result.stdout or "").strip()
+        if stdout_output:
+            log(stdout_output)
         if result.returncode != 0:
-            error_message = result.stderr.strip() or f"Command failed: {' '.join(command)}"
+            error_output = (result.stderr or "").strip()
+            error_message = error_output or f"Command failed: {' '.join(command)}"
             error_log_path = self._write_error_log(command, result.stdout, result.stderr)
             log(error_message)
             log(f"상세 로그 저장 위치: {error_log_path}")
@@ -651,8 +656,9 @@ class PlaylistVideoWorkflow:
                 "ffmpeg 실행에 실패했습니다.\n"
                 f"상세 로그 파일: {error_log_path}"
             )
-        if result.stderr.strip():
-            log(result.stderr.strip())
+        stderr_output = (result.stderr or "").strip()
+        if stderr_output:
+            log(stderr_output)
         log(success_message)
 
     def _write_error_log(self, command: list[str], stdout: str, stderr: str) -> Path:
